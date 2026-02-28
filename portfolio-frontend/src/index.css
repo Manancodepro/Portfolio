@@ -514,7 +514,7 @@ button {
   color: var(--accent-light);
   text-transform: uppercase;
   margin-bottom: 1.5rem;
-  opacity: 0;
+  opacity: 0; /* GSAP-controlled */
 }
 
 .hero-name {
@@ -1767,19 +1767,7 @@ button {
   100% { background-position:   0% center; }
 }
 
-/* ── Hero eyebrow / tagline / cta initial hidden ───*/
-.hero-eyebrow {
-  opacity: 0 !important;
-  transform: translateY(20px);
-}
-.hero-tagline {
-  opacity: 0 !important;
-  transform: translateY(20px);
-}
-.hero-cta {
-  opacity: 0 !important;
-  transform: translateY(20px);
-}
+
 
 /* ── Apple-style scroll: pin hero and parallax ─────*/
 .hero {
@@ -1843,4 +1831,84 @@ button {
   background: linear-gradient(to bottom, var(--accent), var(--neon));
   border-radius: 99px;
 }
+
+
+
+/* ═══════════════════════════════════════════════════
+   CRITICAL FIXES — Pass 3
+   Fix initial states, @property compat, scroll reveals
+═══════════════════════════════════════════════════ */
+
+/* Hero elements — GSAP controls initial opacity via JSX inline styles.
+   CSS must NOT set opacity:0 as a competing rule. Resets: */
+.hero-eyebrow  { opacity: 1 !important; }
+.hero-tagline  { opacity: 1 !important; }
+.hero-cta      { opacity: 1 !important; }
+.scroll-indicator { opacity: 1 !important; }
+
+/* hero-name: GSAP assigns initial opacity:0 via inline style and
+   animates it to 1. The CSS animation must only apply AFTER reveal.
+   We use a delayed animation via animation-delay. */
+.hero-name {
+  animation: heroPulse 4s ease-in-out 2s infinite !important;
+}
+
+/* Hover gradient sweep on hero name — no @property needed */
+.hero-name:hover .name-first {
+  background: linear-gradient(90deg, #f1f5f9 0%, #a78bfa 30%, #06b6d4 60%, #f59e0b 90%) !important;
+  background-size: 200% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: gradientShift 1.2s linear infinite !important;
+  filter: none !important;
+}
+.hero-name:hover .name-last {
+  filter: brightness(1.4) drop-shadow(0 0 14px rgba(6,182,212,0.8)) !important;
+}
+.hero-name:hover {
+  filter: drop-shadow(0 0 25px rgba(124,58,237,0.5)) !important;
+  animation: none !important;
+}
+
+/* Scroll-reveal base states — sections start visible but elements reveal on scroll */
+.projects-title,
+.certs-title,
+.skills-section-title,
+.about-section-title { opacity: 1; }
+
+/* ── Border animation: no @property, use transform-rotate ── */
+/* Replace @keyframes borderSpin with background-position shift */
+@keyframes borderRotateAlt {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
+.project-card::before,
+.cert-card::before {
+  background: linear-gradient(
+    135deg,
+    var(--card-accent, #7c3aed),
+    #06b6d4,
+    #a78bfa,
+    var(--card-accent, #7c3aed)
+  ) !important;
+  background-size: 300% 300% !important;
+  animation: borderRotateAlt 3s ease infinite !important;
+}
+
+/* ── Skills section: ensure wrapper is a proper grid ─────── */
+.skills-wrapper {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 1.8rem !important;
+  align-items: start !important;
+}
+
+/* ── Scroll sections: initial state for GSAP from() ───────── */
+/* GSAP from() sets inline styles; CSS must not conflict.
+   Ensure sections don't have hidden overflow that clips reveals. */
+.section { overflow: visible !important; }
+.about-grid, .projects-grid, .certs-grid { overflow: visible !important; }
 

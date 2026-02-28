@@ -12,273 +12,245 @@ export default function Hero() {
 
     useEffect(() => {
         // ─────────────────────────────────────────────────
-        // THREE.JS  —  Epic 3D Sphere
+        //  THREE.JS  ──  Epic 3D Sphere
         // ─────────────────────────────────────────────────
         const canvas = canvasRef.current
+        const parent = canvas.parentElement
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-        renderer.setSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight)
+        renderer.setSize(parent.clientWidth, parent.clientHeight)
 
         const scene = new THREE.Scene()
-        const camera = new THREE.PerspectiveCamera(
-            50,
-            canvas.parentElement.clientWidth / canvas.parentElement.clientHeight,
-            0.1, 200
-        )
-        camera.position.z = 5.5
+        const camera = new THREE.PerspectiveCamera(50, parent.clientWidth / parent.clientHeight, 0.1, 200)
+        camera.position.z = 6
 
-        // ── Main wireframe icosahedron (more sub-divisions) ──
-        const geo = new THREE.IcosahedronGeometry(1.7, 3)
-        const mat = new THREE.MeshStandardMaterial({
+        // ── Ambient + hemisphere light ──
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6))
+        const hemi = new THREE.HemisphereLight(0x7c3aed, 0x06b6d4, 0.8)
+        scene.add(hemi)
+
+        // ── Outer wireframe icosahedron ──
+        const mainGeo = new THREE.IcosahedronGeometry(1.8, 3)
+        const mainMat = new THREE.MeshStandardMaterial({
             color: 0x7c3aed,
             wireframe: true,
-            emissive: 0x4f1fb5,
-            emissiveIntensity: 0.7,
+            emissive: 0x5b21b6,
+            emissiveIntensity: 1.2,
         })
-        const sphere = new THREE.Mesh(geo, mat)
+        const sphere = new THREE.Mesh(mainGeo, mainMat)
         scene.add(sphere)
 
-        // ── Inner transparent sphere ──
-        const innerGeo = new THREE.SphereGeometry(1.35, 64, 64)
+        // ── Inner glowing solid sphere ──
+        const innerGeo = new THREE.SphereGeometry(1.3, 64, 64)
         const innerMat = new THREE.MeshPhongMaterial({
-            color: 0x06b6d4,
+            color: 0x060620,
             emissive: 0x06b6d4,
-            emissiveIntensity: 0.4,
-            transparent: true,
-            opacity: 0.08,
+            emissiveIntensity: 0.35,
+            transparent: true, opacity: 0.6,
+            shininess: 80,
         })
-        const innerSphere = new THREE.Mesh(innerGeo, innerMat)
-        scene.add(innerSphere)
+        scene.add(new THREE.Mesh(innerGeo, innerMat))
 
-        // ── Octahedron at core (counter-spins) ──
-        const octGeo = new THREE.OctahedronGeometry(0.7, 0)
+        // ── Octahedron core (counter-spin) ──
+        const octGeo = new THREE.OctahedronGeometry(0.6, 1)
         const octMat = new THREE.MeshStandardMaterial({
-            color: 0x06b6d4,
-            wireframe: true,
-            emissive: 0x06b6d4,
-            emissiveIntensity: 0.8,
+            color: 0x06b6d4, wireframe: true,
+            emissive: 0x06b6d4, emissiveIntensity: 1.5,
         })
-        const octahedron = new THREE.Mesh(octGeo, octMat)
-        scene.add(octahedron)
+        const octa = new THREE.Mesh(octGeo, octMat)
+        scene.add(octa)
 
-        // ── Ring 1 — horizontal equatorial ──
-        const r1g = new THREE.TorusGeometry(2.15, 0.012, 8, 200)
-        const r1m = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.55 })
-        const ring1 = new THREE.Mesh(r1g, r1m)
-        ring1.rotation.x = Math.PI / 2
-        scene.add(ring1)
-
-        // ── Ring 2 — tilted ──
-        const r2g = new THREE.TorusGeometry(2.5, 0.007, 8, 200)
-        const r2m = new THREE.MeshBasicMaterial({ color: 0xa78bfa, transparent: true, opacity: 0.4 })
-        const ring2 = new THREE.Mesh(r2g, r2m)
-        ring2.rotation.set(Math.PI / 3, 0, Math.PI / 6)
-        scene.add(ring2)
-
-        // ── Ring 3 — vertical ──
-        const r3g = new THREE.TorusGeometry(1.9, 0.009, 8, 200)
-        const r3m = new THREE.MeshBasicMaterial({ color: 0x7c3aed, transparent: true, opacity: 0.45 })
-        const ring3 = new THREE.Mesh(r3g, r3m)
-        ring3.rotation.set(0, Math.PI / 2, Math.PI / 5)
-        scene.add(ring3)
-
-        // ── Ring 4 — diagonal accent ──
-        const r4g = new THREE.TorusGeometry(2.3, 0.005, 8, 200)
-        const r4m = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.25 })
-        const ring4 = new THREE.Mesh(r4g, r4m)
-        ring4.rotation.set(Math.PI / 5, Math.PI / 4, 0)
-        scene.add(ring4)
-
-        // ── Orbiting dot ──
-        const dotGeo = new THREE.SphereGeometry(0.045, 12, 12)
-        const dotMat = new THREE.MeshBasicMaterial({ color: 0xffffff })
-        const orbitDot = new THREE.Mesh(dotGeo, dotMat)
-        const orbitPivot = new THREE.Object3D()
-        orbitPivot.add(orbitDot)
-        orbitDot.position.set(2.15, 0, 0)
-        scene.add(orbitPivot)
-
-        // ── Pulse ring (expanding and fading) ──
-        const pulseRings = []
-        for (let i = 0; i < 3; i++) {
-            const pg = new THREE.TorusGeometry(1.7, 0.006, 8, 120)
-            const pm = new THREE.MeshBasicMaterial({ color: 0x7c3aed, transparent: true, opacity: 0 })
-            const pr = new THREE.Mesh(pg, pm)
-            scene.add(pr)
-            pulseRings.push({ mesh: pr, mat: pm, phase: (i / 3) * Math.PI * 2 })
+        // ── Helper: glowing torus ring ──
+        const makeRing = (radius, tube, color, opacity, rx = 0, ry = 0, rz = 0) => {
+            const g = new THREE.TorusGeometry(radius, tube, 16, 200)
+            const m = new THREE.MeshStandardMaterial({
+                color,
+                emissive: color,
+                emissiveIntensity: 1.8,
+                transparent: true,
+                opacity,
+            })
+            const mesh = new THREE.Mesh(g, m)
+            mesh.rotation.set(rx, ry, rz)
+            scene.add(mesh)
+            return { mesh, mat: m, geo: g }
         }
 
-        // ── Halo particles ──
-        const PCOUNT = 300
+        const ring1 = makeRing(2.2, 0.025, 0x06b6d4, 0.9, Math.PI / 2, 0, 0)
+        const ring2 = makeRing(2.6, 0.016, 0xa78bfa, 0.8, Math.PI / 3, 0, Math.PI / 6)
+        const ring3 = makeRing(2.0, 0.020, 0x7c3aed, 0.85, 0, Math.PI / 2, Math.PI / 5)
+        const ring4 = makeRing(2.4, 0.010, 0xf59e0b, 0.7, Math.PI / 5, Math.PI / 4, 0)
+
+        // ── Orbiting glowing dot on ring 1 ──
+        const dotGeo = new THREE.SphereGeometry(0.055, 16, 16)
+        const dotMat = new THREE.MeshStandardMaterial({
+            color: 0xffffff, emissive: 0x06b6d4, emissiveIntensity: 3,
+        })
+        const dot = new THREE.Mesh(dotGeo, dotMat)
+        const dotPivot = new THREE.Object3D()
+        dot.position.x = 2.2
+        dotPivot.add(dot)
+        scene.add(dotPivot)
+
+        // ── Second orbiting dot on ring 3 ──
+        const dot2Geo = new THREE.SphereGeometry(0.04, 16, 16)
+        const dot2Mat = new THREE.MeshStandardMaterial({
+            color: 0xffffff, emissive: 0xa78bfa, emissiveIntensity: 3,
+        })
+        const dot2 = new THREE.Mesh(dot2Geo, dot2Mat)
+        const dot2Pivot = new THREE.Object3D()
+        dot2.position.set(2.0, 0, 0)
+        dot2Pivot.rotation.z = Math.PI / 5
+        dot2Pivot.add(dot2)
+        scene.add(dot2Pivot)
+
+        // ── Halo particle cloud ──
+        const PCOUNT = 350
         const pPos = new Float32Array(PCOUNT * 3)
+        const pCol = new Float32Array(PCOUNT * 3)
+        const palette = [
+            [0.486, 0.227, 0.929], // purple
+            [0.024, 0.714, 0.831], // cyan
+            [0.655, 0.545, 0.980], // lavender
+        ]
         for (let i = 0; i < PCOUNT; i++) {
             const θ = Math.random() * Math.PI * 2
             const φ = Math.acos(2 * Math.random() - 1)
-            const r = 2.1 + Math.random() * 1.4
+            const r = 2.3 + Math.random() * 1.5
             pPos[i * 3] = r * Math.sin(φ) * Math.cos(θ)
             pPos[i * 3 + 1] = r * Math.sin(φ) * Math.sin(θ)
             pPos[i * 3 + 2] = r * Math.cos(φ)
+            const c = palette[i % 3]
+            pCol[i * 3] = c[0]; pCol[i * 3 + 1] = c[1]; pCol[i * 3 + 2] = c[2]
         }
         const pGeo = new THREE.BufferGeometry()
         pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
+        pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3))
         const pMat = new THREE.PointsMaterial({
-            size: 0.035, color: 0xa78bfa,
-            transparent: true, opacity: 0.9,
+            size: 0.05, vertexColors: true,
+            transparent: true, opacity: 1.0,
             blending: THREE.AdditiveBlending, depthWrite: false,
         })
-        const haloParticles = new THREE.Points(pGeo, pMat)
-        scene.add(haloParticles)
+        scene.add(new THREE.Points(pGeo, pMat))
 
-        // ── Lights ──
-        scene.add(new THREE.AmbientLight(0xffffff, 0.35))
-        const pl1 = new THREE.PointLight(0x7c3aed, 5, 25); pl1.position.set(4, 4, 4)
-        const pl2 = new THREE.PointLight(0x06b6d4, 4, 25); pl2.position.set(-4, -2, 3)
-        const pl3 = new THREE.PointLight(0xf59e0b, 2, 20); pl3.position.set(0, -4, -2)
-        scene.add(pl1, pl2, pl3)
+        // ── 3 expanding pulse rings (each at different phases) ──
+        const pulseRings = [0, 1, 2].map(i => {
+            const g = new THREE.TorusGeometry(1.8, 0.008, 8, 100)
+            const m = new THREE.MeshBasicMaterial({
+                color: i === 0 ? 0x7c3aed : i === 1 ? 0x06b6d4 : 0xa78bfa,
+                transparent: true, opacity: 0,
+            })
+            const mesh = new THREE.Mesh(g, m)
+            scene.add(mesh)
+            return { mesh, mat: m, phase: (i / 3) * Math.PI * 2 }
+        })
 
-        // ── Orbiting point light ──
-        const movingLight = new THREE.PointLight(0xa78bfa, 3, 15)
-        scene.add(movingLight)
+        // ── Moving coloured point lights ──
+        const pl1 = new THREE.PointLight(0x7c3aed, 6, 30); pl1.position.set(3, 3, 3)
+        const pl2 = new THREE.PointLight(0x06b6d4, 5, 30); pl2.position.set(-3, -2, 2)
+        const pl3 = new THREE.PointLight(0xf59e0b, 3, 20); pl3.position.set(0, -3, -2)
+        const movingPL = new THREE.PointLight(0xa78bfa, 4, 18)
+        scene.add(pl1, pl2, pl3, movingPL)
 
-        // ── Mouse reactive ──
-        let tgtRotX = 0, tgtRotY = 0
-        const onMouseMove = (e) => {
-            tgtRotY = (e.clientX / window.innerWidth - 0.5) * 1.0
-            tgtRotX = (e.clientY / window.innerHeight - 0.5) * 0.7
+        // ── Mouse tracking ──
+        let mouseX = 0, mouseY = 0
+        const onMove = (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2
         }
-        window.addEventListener('mousemove', onMouseMove)
+        window.addEventListener('mousemove', onMove)
 
-        // ── Animation loop ──
+        // ── Render loop ──
         let animId
         const clock = new THREE.Clock()
-        const animate = () => {
-            animId = requestAnimationFrame(animate)
+
+        const loop = () => {
+            animId = requestAnimationFrame(loop)
             const t = clock.getElapsedTime()
 
-            // Sphere lazy-follows mouse
-            sphere.rotation.x += (tgtRotX * 0.5 - sphere.rotation.x) * 0.04
-            sphere.rotation.y += (tgtRotY * 0.5 - sphere.rotation.y) * 0.04 + 0.004
-            innerSphere.rotation.y -= 0.003
-            octahedron.rotation.x += 0.008
-            octahedron.rotation.y += 0.006
+            // Sphere: lazy-follow mouse
+            sphere.rotation.x += (-mouseY * 0.4 - sphere.rotation.x) * 0.04
+            sphere.rotation.y += (mouseX * 0.6 - sphere.rotation.y) * 0.04 + 0.003
+            octa.rotation.x += 0.009
+            octa.rotation.y += 0.007
 
-            // Rings orbit at own speeds
-            ring1.rotation.z = t * 0.25
-            ring2.rotation.z = t * 0.18
-            ring3.rotation.x = t * 0.12
-            ring4.rotation.y = t * 0.08
+            // Rings orbit
+            ring1.mesh.rotation.z = t * 0.22
+            ring2.mesh.rotation.z = t * 0.16
+            ring3.mesh.rotation.x = t * 0.13
+            ring4.mesh.rotation.y = t * 0.09
 
-            // Orbiting dot
-            orbitPivot.rotation.y = t * 0.6
-            orbitPivot.rotation.x = Math.sin(t * 0.3) * 0.4
+            // Orbiting dots
+            dotPivot.rotation.y = t * 0.65
+            dotPivot.rotation.x = Math.sin(t * 0.3) * 0.35
+            dot2Pivot.rotation.y = -t * 0.45
+            dot2Pivot.rotation.x = Math.cos(t * 0.4) * 0.3
 
-            // Orbiting light
-            movingLight.position.x = Math.sin(t * 0.7) * 3.5
-            movingLight.position.y = Math.cos(t * 0.5) * 3
-            movingLight.position.z = Math.cos(t * 0.7) * 3.5
+            // Moving point light orbit
+            movingPL.position.x = Math.sin(t * 0.8) * 3.5
+            movingPL.position.y = Math.cos(t * 0.6) * 3.0
+            movingPL.position.z = Math.cos(t * 0.8) * 3.5
 
-            // Pulse rings — expand outward and fade
+            // Pulsing light intensities
+            pl1.intensity = 5 + 3 * Math.sin(t * 1.4)
+            pl2.intensity = 4 + 2.5 * Math.sin(t * 1.1 + 1)
+            movingPL.intensity = 3 + 2 * Math.sin(t * 2.1)
+
+            // Expanding pulse rings
             pulseRings.forEach(({ mesh, mat: pm, phase }) => {
-                const s = 1 + 0.6 * ((Math.sin(t * 0.8 + phase) + 1) / 2)
-                mesh.scale.setScalar(s)
-                pm.opacity = 0.35 * (1 - (s - 1) / 0.6)
+                const progress = ((Math.sin(t * 0.7 + phase) + 1) / 2) // 0→1
+                mesh.scale.setScalar(1 + progress * 0.8)
+                pm.opacity = 0.6 * (1 - progress)
             })
 
-            // Halo particles drift
-            haloParticles.rotation.y = t * 0.04
-            haloParticles.rotation.x = t * 0.025
+            // Inner mat pulse
+            innerMat.emissiveIntensity = 0.25 + 0.3 * Math.sin(t * 2)
 
-            // Light pulsing
-            pl1.intensity = 4 + 2.5 * Math.sin(t * 1.3)
-            pl2.intensity = 3 + 2 * Math.sin(t * 1.1 + 1)
-            movingLight.intensity = 2 + 1.5 * Math.sin(t * 2)
-
-            innerMat.opacity = 0.06 + 0.06 * Math.sin(t * 2.2)
+            // Ring glow pulse
+            ring1.mat.emissiveIntensity = 1.5 + 0.8 * Math.sin(t * 1.8)
+            ring2.mat.emissiveIntensity = 1.3 + 0.7 * Math.sin(t * 1.5 + 1)
 
             renderer.render(scene, camera)
         }
-        animate()
+        loop()
 
-        const handleResize = () => {
-            const w = canvas.parentElement.clientWidth
-            const h = canvas.parentElement.clientHeight
-            renderer.setSize(w, h)
-            camera.aspect = w / h
+        // Resize
+        const onResize = () => {
+            renderer.setSize(parent.clientWidth, parent.clientHeight)
+            camera.aspect = parent.clientWidth / parent.clientHeight
             camera.updateProjectionMatrix()
         }
-        window.addEventListener('resize', handleResize)
+        window.addEventListener('resize', onResize)
 
         // ─────────────────────────────────────────────────
-        // GSAP  —  Hero reveal (name is ALWAYS visible,
-        //          just fades in on load once)
+        //  GSAP  ──  Hero reveal
         // ─────────────────────────────────────────────────
         const hero = heroRef.current
-        const tl = gsap.timeline({ delay: 0.2 })
-        tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
-            .to('.hero-name', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.4')
-            .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, '-=0.3')
+        gsap.timeline({ delay: 0.4 })
+            .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+            .to('.hero-name', { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, '-=0.4')
+            .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, '-=0.4')
             .to('.hero-cta', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
-            .to('.scroll-indicator', { opacity: 1, duration: 0.6 }, '-=0.1')
+            .to('.scroll-indicator', { opacity: 1, duration: 0.5 }, '-=0.2')
 
-        // ── Scroll parallax on hero content ──────────────
+        // ── Apple-style: hero content floats up on scroll ──
         gsap.to('.hero-content', {
-            y: -120,
+            y: -150,
             ease: 'none',
-            scrollTrigger: {
-                trigger: hero,
-                start: 'top top',
-                end: 'bottom top',
-                scrub: 1,
-            },
+            scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 1.2 },
         })
 
-        // ── Hero scale-fade on scroll ─────────────────────
-        gsap.to('.hero-name', {
-            scale: 0.85,
-            opacity: 0.3,
+        // ── Sphere canvas parallax on scroll ──
+        gsap.to('.hero-canvas-wrap', {
+            scale: 1.15,
             ease: 'none',
-            scrollTrigger: {
-                trigger: hero,
-                start: 'center top',
-                end: 'bottom top',
-                scrub: 1.5,
-            },
+            scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 2 },
         })
-
-        // ── Hover: sweep gradient animation across name ───
-        const nameEl = nameRef.current
-        const onNameEnter = () => {
-            gsap.to(nameEl, {
-                backgroundSize: '300% auto',
-                duration: 0.5,
-                ease: 'power2.out',
-            })
-            nameEl.classList.add('name-hovered')
-        }
-        const onNameLeave = () => {
-            nameEl.classList.remove('name-hovered')
-            // Let the CSS animation handle the gradient sweep-out
-        }
-        if (nameEl) {
-            nameEl.addEventListener('mouseenter', onNameEnter)
-            nameEl.addEventListener('mouseleave', onNameLeave)
-        }
 
         return () => {
             cancelAnimationFrame(animId)
-            window.removeEventListener('resize', handleResize)
-            window.removeEventListener('mousemove', onMouseMove)
-            if (nameEl) {
-                nameEl.removeEventListener('mouseenter', onNameEnter)
-                nameEl.removeEventListener('mouseleave', onNameLeave)
-            }
-            ;[geo, mat, innerGeo, innerMat, octGeo, octMat,
-                r1g, r1m, r2g, r2m, r3g, r3m, r4g, r4m,
-                dotGeo, dotMat, pGeo, pMat,
-                ...pulseRings.map(p => p.mesh.geometry),
-                ...pulseRings.map(p => p.mat),
-            ].forEach(o => o?.dispose?.())
-            renderer.dispose()
+            window.removeEventListener('resize', onResize)
+            window.removeEventListener('mousemove', onMove)
         }
     }, [])
 
@@ -296,24 +268,24 @@ export default function Hero() {
                     ✦ Full Stack Developer &amp; 3D Web Engineer
                 </div>
 
-                <h1 className="hero-name" ref={nameRef} style={{ opacity: 0, transform: 'translateY(30px)' }}>
+                <h1 className="hero-name" ref={nameRef}>
                     <span className="name-first">Manan</span>
                     {' '}
                     <span className="name-last gradient-text">Patel</span>
                 </h1>
 
-                <p className="hero-tagline" style={{ opacity: 0, transform: 'translateY(20px)' }}>
+                <p className="hero-tagline">
                     Crafting immersive digital experiences from code and imagination.
                     Where creativity meets engineering precision.
                 </p>
 
-                <div className="hero-cta" style={{ opacity: 0, transform: 'translateY(20px)' }}>
+                <div className="hero-cta">
                     <button className="btn-primary" onClick={scrollToProjects}>View My Work →</button>
                     <button className="btn-outline" onClick={scrollToContact}>Get In Touch</button>
                 </div>
             </div>
 
-            <div className="scroll-indicator" style={{ opacity: 0 }}>
+            <div className="scroll-indicator">
                 <span>SCROLL</span>
                 <div className="scroll-line" />
             </div>
