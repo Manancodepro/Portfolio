@@ -76,10 +76,9 @@ export default function Hero() {
             return { mesh, mat: m, geo: g }
         }
 
+        // Only 2 elegant rings — equatorial cyan + tilted lavender (no plus-sign)
         const ring1 = makeRing(2.2, 0.025, 0x06b6d4, 0.9, Math.PI / 2, 0, 0)
-        const ring2 = makeRing(2.6, 0.016, 0xa78bfa, 0.8, Math.PI / 3, 0, Math.PI / 6)
-        const ring3 = makeRing(2.0, 0.020, 0x7c3aed, 0.85, 0, Math.PI / 2, Math.PI / 5)
-        const ring4 = makeRing(2.4, 0.010, 0xf59e0b, 0.7, Math.PI / 5, Math.PI / 4, 0)
+        const ring2 = makeRing(2.6, 0.018, 0xa78bfa, 0.85, Math.PI / 3.5, 0, Math.PI / 7)
 
         // ── Orbiting glowing dot on ring 1 ──
         const dotGeo = new THREE.SphereGeometry(0.055, 16, 16)
@@ -92,15 +91,15 @@ export default function Hero() {
         dotPivot.add(dot)
         scene.add(dotPivot)
 
-        // ── Second orbiting dot on ring 3 ──
+        // ── Second orbiting dot on ring 2 ──
         const dot2Geo = new THREE.SphereGeometry(0.04, 16, 16)
         const dot2Mat = new THREE.MeshStandardMaterial({
             color: 0xffffff, emissive: 0xa78bfa, emissiveIntensity: 3,
         })
         const dot2 = new THREE.Mesh(dot2Geo, dot2Mat)
         const dot2Pivot = new THREE.Object3D()
-        dot2.position.set(2.0, 0, 0)
-        dot2Pivot.rotation.z = Math.PI / 5
+        dot2.position.set(2.6, 0, 0)
+        dot2Pivot.rotation.x = Math.PI / 3.5
         dot2Pivot.add(dot2)
         scene.add(dot2Pivot)
 
