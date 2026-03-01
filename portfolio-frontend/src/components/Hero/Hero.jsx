@@ -98,7 +98,7 @@ export default function Hero() {
       emissive: 0x06b6d4,
       emissiveIntensity: 3,
     });
-    const dot = new THREE.Mesh(dotGeo, dotM`a`t);
+    const dot = new THREE.Mesh(dotGeo, dotMat);
     const dotPivot = new THREE.Object3D();
     dot.position.x = 2.2;
     dotPivot.add(dot);
