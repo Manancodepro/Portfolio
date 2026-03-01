@@ -108,7 +108,7 @@ button {
 }
 
 .section {
-  padding: var(--section-pad) 0;
+  padding: 120px 0;
   position: relative;
 }
 
@@ -150,7 +150,7 @@ button {
 
 .section-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
 }
 
 /* ── Glass Card ────────────────────────────── */
@@ -251,10 +251,10 @@ button {
   pointer-events: none;
 }
 
-/* ── Main content above canvas ─────────────── */
-#root>.app-wrapper {
+main {
   position: relative;
   z-index: 1;
+  padding-top: 72px;
 }
 
 /* ── Animated gradient border ──────────────── */
@@ -380,17 +380,19 @@ button {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 1000;
   padding: 0 5%;
   height: 72px;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: space-between;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  background: rgba(0, 0, 0, 0.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.8) !important;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.3);
   transition: background var(--transition);
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .navbar-logo {
@@ -398,6 +400,7 @@ button {
   font-size: 1.4rem;
   font-weight: 800;
   letter-spacing: -0.04em;
+  color: #ffffff;
 }
 
 .navbar-links {
@@ -410,9 +413,10 @@ button {
   font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #e0e0e0;
   position: relative;
   transition: color var(--transition);
+  cursor: pointer;
 }
 
 .nav-link::after {
@@ -550,6 +554,8 @@ button {
   max-width: 600px;
   margin: 0 auto 2.5rem;
   opacity: 0;
+  border: none;
+  padding: 0;
 }
 
 .hero-cta {
@@ -604,6 +610,7 @@ button {
   grid-template-columns: 1fr 1fr;
   gap: 5rem;
   align-items: center;
+  margin-top: 3rem;
 }
 
 .about-image-wrap {

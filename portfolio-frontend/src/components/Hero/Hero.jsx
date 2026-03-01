@@ -88,17 +88,8 @@ export default function Hero() {
       return { mesh, mat: m, geo: g };
     };
 
-    // Only 2 elegant rings — equatorial cyan + tilted lavender (no plus-sign)
-    const ring1 = makeRing(2.2, 0.025, 0x06b6d4, 0.9, Math.PI / 2, 0, 0);
-    const ring2 = makeRing(
-      2.6,
-      0.018,
-      0xa78bfa,
-      0.85,
-      Math.PI / 3.5,
-      0,
-      Math.PI / 7,
-    );
+    // Only 1 elegant ring — equatorial cyan
+    const ring1 = makeRing(2.2, 0.025, 0x06b6d4, 0, Math.PI / 2, 0, 0);
 
     // ── Orbiting glowing dot on ring 1 ──
     const dotGeo = new THREE.SphereGeometry(0.055, 16, 16);
@@ -107,25 +98,11 @@ export default function Hero() {
       emissive: 0x06b6d4,
       emissiveIntensity: 3,
     });
-    const dot = new THREE.Mesh(dotGeo, dotMat);
+    const dot = new THREE.Mesh(dotGeo, dotM`a`t);
     const dotPivot = new THREE.Object3D();
     dot.position.x = 2.2;
     dotPivot.add(dot);
     scene.add(dotPivot);
-
-    // ── Second orbiting dot on ring 2 ──
-    const dot2Geo = new THREE.SphereGeometry(0.04, 16, 16);
-    const dot2Mat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      emissive: 0xa78bfa,
-      emissiveIntensity: 3,
-    });
-    const dot2 = new THREE.Mesh(dot2Geo, dot2Mat);
-    const dot2Pivot = new THREE.Object3D();
-    dot2.position.set(2.6, 0, 0);
-    dot2Pivot.rotation.x = Math.PI / 3.5;
-    dot2Pivot.add(dot2);
-    scene.add(dot2Pivot);
 
     // ── Halo particle cloud ──
     const PCOUNT = 350;
@@ -209,13 +186,10 @@ export default function Hero() {
 
       // Rings orbit
       ring1.mesh.rotation.z = t * 0.22;
-      ring2.mesh.rotation.z = t * 0.16;
 
       // Orbiting dots
       dotPivot.rotation.y = t * 0.65;
       dotPivot.rotation.x = Math.sin(t * 0.3) * 0.35;
-      dot2Pivot.rotation.y = -t * 0.45;
-      dot2Pivot.rotation.x = Math.cos(t * 0.4) * 0.3;
 
       // Moving point light orbit
       movingPL.position.x = Math.sin(t * 0.8) * 3.5;
@@ -239,7 +213,6 @@ export default function Hero() {
 
       // Ring glow pulse
       ring1.mat.emissiveIntensity = 1.5 + 0.8 * Math.sin(t * 1.8);
-      ring2.mat.emissiveIntensity = 1.3 + 0.7 * Math.sin(t * 1.5 + 1);
 
       renderer.render(scene, camera);
     };
