@@ -299,12 +299,12 @@ export default function Hero() {
 
       <div className="hero-content">
         <div className="hero-eyebrow">
-          ✦ Full Stack Developer &amp; 3D Web Engineer
+          ✦ Full Stack Developer &amp;.NET Engineer✦
         </div>
 
-        <h1 className="hero-name" ref={nameRef}>
+        <h1 className="hero-name rainbow-hover" ref={nameRef}>
           <span className="name-first">Manan</span>{" "}
-          <span className="name-last gradient-text">Patel</span>
+          <span className="name-last">Patel</span>
         </h1>
 
         <p className="hero-tagline">
@@ -321,11 +321,11 @@ export default function Hero() {
           </button>
         </div>
       </div>
-
+{/* 
       <div className="scroll-indicator">
         <span>SCROLL</span>
         <div className="scroll-line" />
-      </div>
+      </div> */}
     </section>
   );
 }

@@ -32,7 +32,6 @@ export default function Navbar() {
         duration: 1,
         ease: "power3.out",
         delay: 0.1,
-        // clearProps: "all",
       },
     );
   }, []);
