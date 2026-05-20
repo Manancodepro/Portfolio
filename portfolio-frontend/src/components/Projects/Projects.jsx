@@ -81,20 +81,6 @@ const PROJECTS = [
     accentColor: "#10b981",
     shadowColor: "rgba(16,185,129,0.35)",
   },
-  {
-    id: 6,
-    title: "Your Project Title",
-    desc: "A short one-liner description of what this project does and the problem it solves.",
-    longDesc:
-      "Replace this with a detailed description of your sixth project. Include the key features, your technical decisions, and the impact it had.",
-    thumb: "🔗",
-    thumbBg: "linear-gradient(135deg, #f97316 0%, #a855f7 100%)",
-    tags: ["Tech1", "Tech2", "Tech3", "Tech4", "Tech5"],
-    github: "#",
-    live: "#",
-    accentColor: "#f97316",
-    shadowColor: "rgba(249,115,22,0.35)",
-  },
 ];
 
 function ProjectModal({ project, onClose }) {
