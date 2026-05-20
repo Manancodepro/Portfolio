@@ -93,22 +93,22 @@ export default function About() {
               love.
             </p>
             <p>
-              My expertise spans the entire stack — from React frontends and
-              Node.js APIs to Three.js 3D environments and MongoDB databases. I
-              thrive at the intersection of beautiful UI and robust
-              architecture.
+              I'm a fresher in web development and I'm excited to apply my
+              knowledge to real-world projects. I have hands-on experience with
+              React, Node.js, MongoDB, and modern web technologies through
+              various projects and certifications.
             </p>
             <p>
-              When I'm not coding, I'm exploring the latest in WebGL, procedural
-              art, and open-source projects. I believe great software is an art
-              form.
+              I'm passionate about learning new technologies, building clean and
+              efficient code, and creating meaningful digital experiences. I'm
+              eager to collaborate with experienced developers and contribute to
+              challenging projects.
             </p>
 
             <div className="about-stats">
               {[
-                { num: "10+", label: "Projects Built" },
-                { num: "5+", label: "Certifications" },
-                { num: "2+", label: "Years Exp." },
+                { num: "5+", label: "Projects Built" },
+                { num: "4+", label: "Certifications" },
               ].map((s) => (
                 <div key={s.label} className="stat-item">
                   <div className="stat-num gradient-text">{s.num}</div>

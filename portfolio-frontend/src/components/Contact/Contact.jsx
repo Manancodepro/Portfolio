@@ -68,8 +68,8 @@ export default function Contact() {
                         </p>
                         <div className="contact-details">
                             {[
-                                { icon: '📧', label: 'manan@example.com' },
-                                { icon: '📍', label: 'Mumbai, India' },
+                                { icon: '📧', label: 'manancodepro1506@gmail.com' },
+                                { icon: '📍', label: 'Anand' },
                                 { icon: '💼', label: 'Open to opportunities' },
                             ].map(item => (
                                 <div key={item.label} className="contact-item">

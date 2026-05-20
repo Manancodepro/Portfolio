@@ -19,12 +19,12 @@ const CERTS = [
         desc: 'Supervised/unsupervised learning, neural networks, and ML best practices taught by Andrew Ng across a 3-course specialization.'
     },
     {
-        id: 4, icon: '🏆', title: 'Your Certification Title', issuer: 'Issuer Name', date: 'Month YYYY', color: '#a78bfa',
-        desc: 'Replace this with a description of your fourth certification — what you learned and the skills it validates.'
+        id: 4, icon: '🏆', title: '1X NPTEL Certified', issuer: 'NPTEL', date: 'May 2024', color: '#a78bfa',
+        desc: 'Successfully completed NPTEL course with excellent performance. Gained in-depth knowledge of core computer science concepts, programming fundamentals, and software engineering best practices.'
     },
     {
-        id: 5, icon: '📜', title: 'Your Certification Title', issuer: 'Issuer Name', date: 'Month YYYY', color: '#4ade80',
-        desc: 'Replace this with a description of your fifth certification — what you learned and the skills it validates.'
+        id: 5, icon: '📜', title: 'GeeksforGeeks 160 Days Coding Challenge', issuer: 'GeeksforGeeks', date: 'Apr 2024', color: '#4ade80',
+        desc: 'Completed the rigorous 160-day coding challenge on GeeksforGeeks, solving 160+ problems across DSA, algorithms, and data structures. Strengthened problem-solving skills and competitive programming expertise.'
     },
     {
         id: 6, icon: '🎓', title: 'Your Certification Title', issuer: 'Issuer Name', date: 'Month YYYY', color: '#60a5fa',
