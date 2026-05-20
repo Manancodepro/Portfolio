@@ -28,7 +28,7 @@ const SKILLS = {
         items: [
             { name: 'MongoDB', icon: '🍃', pct: 88, tooltip: 'Aggregation pipelines, Mongoose ODM' },
             { name: 'PostgreSQL', icon: '🐘', pct: 78, tooltip: 'Joins, transactions, indexing' },
-            { name: 'Redis', icon: '🔴', pct: 72, tooltip: 'Caching, pub/sub, job queues' },
+            { name: 'MySQL', icon: '🐬', pct: 75, tooltip: 'Relational databases, queries, normalization' },
         ]
     },
     'DevOps': {
